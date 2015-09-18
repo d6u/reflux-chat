@@ -2,16 +2,21 @@ import React from 'react';
 import last from 'lodash/array/last';
 import ThreadListItem from '../components/ThreadListItem.react';
 import ThreadStore from '../stores/ThreadStore';
+import CurrentThreadStore from '../stores/CurrentThreadStore';
 
 export default class ThreadSection extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {threads: {}};
+    this.state = {
+      threads: {},
+      currentThreadID: null
+    };
   }
 
   componentDidMount() {
-    this.unsubscribe = ThreadStore.listen(this._onChange.bind(this));
+    this.unsubscribe = ThreadStore.listen(this._onChangeThread.bind(this));
+    this.unsubscribe = CurrentThreadStore.listen(this._onChangeCurrentThread.bind(this));
   }
 
   componentWillUnmount() {
@@ -21,11 +26,11 @@ export default class ThreadSection extends React.Component {
   render() {
     let threadListItems = Object.keys(this.state.threads).map(threadID => {
       let messages = this.state.threads[threadID];
-          // currentThreadID={this.state.currentThreadID}
       return (
         <ThreadListItem
           key={threadID}
           lastMessage={last(messages)}
+          currentThreadID={this.state.currentThreadID}
         />
       );
     });
@@ -46,11 +51,12 @@ export default class ThreadSection extends React.Component {
     );
   }
 
-  /**
-   * Event handler for 'change' events coming from the stores
-   */
-  _onChange(threads) {
+  _onChangeThread(threads) {
     this.setState({ threads });
+  }
+
+  _onChangeCurrentThread(currentThreadID) {
+    this.setState({ currentThreadID });
   }
 
 };

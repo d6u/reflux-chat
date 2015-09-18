@@ -9,7 +9,15 @@ let ThreadStore = Reflux.createStore({
   },
 
   messagesChanged(messages) {
-    this.trigger(groupBy(messages, 'threadID'));
+    let threads = groupBy(messages, 'threadID');
+    Object.keys(threads).forEach(threadID => {
+      let messages = threads[threadID];
+      let threadName = messages[0].threadName;
+      for (let message of messages) {
+        message.threadName = threadName;
+      }
+    });
+    this.trigger(threads);
   }
 
 });
