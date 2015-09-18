@@ -3,6 +3,7 @@ import last from 'lodash/array/last';
 import ThreadListItem from '../components/ThreadListItem.react';
 import ThreadStore from '../stores/ThreadStore';
 import CurrentThreadStore from '../stores/CurrentThreadStore';
+import UnreadCountStore from '../stores/UnreadCountStore';
 
 export default class ThreadSection extends React.Component {
 
@@ -10,17 +11,21 @@ export default class ThreadSection extends React.Component {
     super(props);
     this.state = {
       threads: {},
-      currentThreadID: null
+      currentThreadID: null,
+      unreadCount: 0
     };
   }
 
   componentDidMount() {
-    this.unsubscribe = ThreadStore.listen(this._onChangeThread.bind(this));
-    this.unsubscribe = CurrentThreadStore.listen(this._onChangeCurrentThread.bind(this));
+    this.unsubscribe1 = ThreadStore.listen(this._onChangeThread.bind(this));
+    this.unsubscribe2 = CurrentThreadStore.listen(this._onChangeCurrentThread.bind(this));
+    this.unsubscribe3 = UnreadCountStore.listen(this._onChangeUnreadCount.bind(this));
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
+    this.unsubscribe1();
+    this.unsubscribe2();
+    this.unsubscribe3();
   }
 
   render() {
@@ -57,6 +62,10 @@ export default class ThreadSection extends React.Component {
 
   _onChangeCurrentThread(currentThreadID) {
     this.setState({ currentThreadID });
+  }
+
+  _onChangeUnreadCount(unreadCount) {
+    this.setState({ unreadCount });
   }
 
 };

@@ -1,5 +1,6 @@
 import Reflux from 'reflux';
 import remove from 'lodash/array/remove';
+import last from 'lodash/array/last';
 import * as ChatMessageUtils from '../utils/ChatMessageUtils';
 import * as Actions from '../actions';
 
@@ -9,10 +10,16 @@ let MessageStore = Reflux.createStore({
     this.listenTo(Actions.loadRawMessages.completed, this.loadedRawMessages);
     this.listenTo(Actions.createMessage.formattedMessage, this.messageCreated);
     this.listenTo(Actions.createMessage.completed, this.receiveNewMessage);
+    this.listenTo(Actions.clickThread, this.changeThread);
   },
 
   loadedRawMessages(messages) {
-    this._messages = messages.map(m => ChatMessageUtils.convertRawMessage(m));
+    let lastThreadID = last(messages).threadID;
+    this._messages = messages.map(m => {
+      let message = ChatMessageUtils.convertRawMessage(m);
+      message.isRead = message.threadID === lastThreadID ? true : false;
+      return message;
+    });
     this.triggerEvent();
   },
 
@@ -23,7 +30,18 @@ let MessageStore = Reflux.createStore({
 
   receiveNewMessage({rawMessage, tempMessageID}) {
     remove(this._messages, m => m.id === tempMessageID);
-    this._messages.push(ChatMessageUtils.convertRawMessage(rawMessage));
+    let message = ChatMessageUtils.convertRawMessage(rawMessage);
+    message.isRead = true;
+    this._messages.push(message);
+    this.triggerEvent();
+  },
+
+  changeThread(threadID) {
+    for (let message of this._messages) {
+      if (message.threadID === threadID) {
+        message.isRead = true;
+      }
+    }
     this.triggerEvent();
   },
 

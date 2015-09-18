@@ -50,8 +50,8 @@ export default class MessageSection extends React.Component {
   }
 
   _scrollToBottom() {
-    let ul = this.refs.messageList;
-    if (ul) {
+    if (this.refs.messageList) {
+      let ul = this.refs.messageList.getDOMNode();
       ul.scrollTop = ul.scrollHeight;
     }
   }
