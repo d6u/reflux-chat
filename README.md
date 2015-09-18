@@ -1,21 +1,15 @@
-## Flux Chat Example
+## Reflux Chat Example
 
-**This was copied from [Facebook Flux Chat example](https://github.com/facebook/flux/tree/master/examples/flux-chat)**.
+**This was base on [Flux Chat example](https://github.com/d6u/flux-chat),**
+**which was originated from Facebook Flux Chat example, but with Reflux as its**
+**Flux implementation.**
 
-The reason for copying over is to easily keep it up to date with new React
-release and for readers to compare different Flux implementations. You can read
-over the original repo
-[here](https://github.com/facebook/flux/tree/master/examples/flux-chat).
+## Reflux
 
-## Changes from Original Flux Chat Example
-
-- Update React.js to 0.14rc1
-- Mock server latency when "fetching" messages (use `setTimeout`)
-- Use ES6 syntax
-- Consolidate actions into single file (actions.js)
-- Webpack instead of Browserify
-- Babel instead of Reactify
-- Remove testing for stores (for now)
+Instead of using the official Facebook Flux dispatcher, Reflux Chat example is
+using [Reflux](https://github.com/reflux/refluxjs) with no dispatcher, a
+singleton store, pure function action creators and reducers. Please see Details
+on official Reflux repo.
 
 ## Running
 
