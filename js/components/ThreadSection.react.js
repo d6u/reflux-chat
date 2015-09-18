@@ -1,55 +1,35 @@
-/**
- * This file is provided by Facebook for testing and evaluation purposes
- * only. Facebook reserves all rights not expressly granted.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 import React from 'react';
+import last from 'lodash/array/last';
 import ThreadListItem from '../components/ThreadListItem.react';
 import ThreadStore from '../stores/ThreadStore';
-import UnreadThreadStore from '../stores/UnreadThreadStore';
-
-function getStateFromStores() {
-  return {
-    threads: ThreadStore.getAllChrono(),
-    currentThreadID: ThreadStore.getCurrentID(),
-    unreadCount: UnreadThreadStore.getCount()
-  };
-}
 
 export default class ThreadSection extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = getStateFromStores();
+    this.state = {threads: {}};
   }
 
   componentDidMount() {
-    ThreadStore.addChangeListener(this._onChange.bind(this));
-    UnreadThreadStore.addChangeListener(this._onChange.bind(this));
+    this.unsubscribe = ThreadStore.listen(this._onChange.bind(this));
   }
 
   componentWillUnmount() {
-    ThreadStore.removeChangeListener(this._onChange.bind(this));
-    UnreadThreadStore.removeChangeListener(this._onChange.bind(this));
+    this.unsubscribe();
   }
 
   render() {
-    let threadListItems = this.state.threads.map(function(thread) {
+    let threadListItems = Object.keys(this.state.threads).map(threadID => {
+      let messages = this.state.threads[threadID];
+          // currentThreadID={this.state.currentThreadID}
       return (
         <ThreadListItem
-          key={thread.id}
-          thread={thread}
-          currentThreadID={this.state.currentThreadID}
+          key={threadID}
+          lastMessage={last(messages)}
         />
       );
-    }, this);
+    });
+
     let unread =
       this.state.unreadCount === 0 ?
       null :
@@ -69,8 +49,8 @@ export default class ThreadSection extends React.Component {
   /**
    * Event handler for 'change' events coming from the stores
    */
-  _onChange() {
-    this.setState(getStateFromStores());
+  _onChange(threads) {
+    this.setState({ threads });
   }
 
 };
