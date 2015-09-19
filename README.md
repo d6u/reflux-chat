@@ -7,9 +7,8 @@
 ## Reflux
 
 Instead of using the official Facebook Flux dispatcher, Reflux Chat example is
-using [Reflux](https://github.com/reflux/refluxjs) with no dispatcher, a
-singleton store, pure function action creators and reducers. Please see Details
-on official Reflux repo.
+using [Reflux](https://github.com/reflux/refluxjs) with actions as dispatchers.
+Please see Details on official Reflux repo.
 
 ## Running
 
